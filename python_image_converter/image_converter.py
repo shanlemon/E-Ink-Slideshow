@@ -12,7 +12,7 @@ images_bmp_path = "./images_bmp"
 output_path = "./output"
 image_output_dimensions = (600, 448)
 
-image_name = "outdoors"
+image_name = "IMG_6341"
 
 # black, white, red, green, blue, yellow, orange
 palette = [(0, 0, 0), (255, 255, 255), (255, 0, 0), (0, 255, 0), (0, 0, 255), (255, 255, 0), (255, 128, 0)]
