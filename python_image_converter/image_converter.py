@@ -1,6 +1,6 @@
 from itertools import count
 from logging import PlaceHolder
-from PIL import Image, ImageColor
+from PIL import Image, ImageColor, ImageOps
 from os import listdir
 from os.path import isfile, join
 import math
@@ -10,6 +10,9 @@ from matplotlib.colors import hex2color, rgb2hex
 images_path = "./images"
 images_bmp_path = "./images_bmp"
 output_path = "./output"
+image_output_dimensions = (600, 448)
+
+image_name = "outdoors"
 
 # black, white, red, green, blue, yellow, orange
 palette = [(0, 0, 0), (255, 255, 255), (255, 0, 0), (0, 255, 0), (0, 0, 255), (255, 255, 0), (255, 128, 0)]
@@ -30,10 +33,11 @@ def find_closest_palette_color(color):
             closest_color = palette_color
     return closest_color
 
-image = Image.open(join(images_path, "outdoors.jpg"))
+image = Image.open(join(images_path, image_name + ".jpg"))
 
 # duplicate image data
-new_image = image.copy()
+new_image = ImageOps.fit(image, image_output_dimensions, method = 0,
+                   bleed = 0.0, centering =(0.5, 0.5))
 
 # read every pixel from a non-BMP file
 for y in range(0, new_image.size[1]):
@@ -75,7 +79,7 @@ for y in range(0, new_image.size[1]):
             new_image.putpixel((x + 1, y + 1), tuple(adjacent_pixel))
 
 # save image
-new_image.save(join(output_path, "outdoors_dithered.png"))
+new_image.save(join(output_path, image_name + "_dithered.png"))
 
 
 # output = []
