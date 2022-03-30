@@ -12,10 +12,11 @@ images_bmp_path = "./images_bmp"
 output_path = "./output"
 image_output_dimensions = (600, 448)
 
-image_name = "IMG_6341"
+image_name = "rog"
 
 # black, white, red, green, blue, yellow, orange
 palette = [(0, 0, 0), (255, 255, 255), (255, 0, 0), (0, 255, 0), (0, 0, 255), (255, 255, 0), (255, 128, 0)]
+palette_binary = ["0000", "0001", "0100", "0010", "0011", "0101", "0110"]
 
 def subtract_tuple(tuple_a, tuple_b):
     return tuple(map(lambda i, j: i - j, tuple_a, tuple_b))
@@ -33,7 +34,7 @@ def find_closest_palette_color(color):
             closest_color = palette_color
     return closest_color
 
-image = Image.open(join(images_path, image_name + ".jpg"))
+image = Image.open(join(images_path, image_name + ".png"))
 
 # duplicate image data
 new_image = ImageOps.fit(image, image_output_dimensions, method = 0,
@@ -82,41 +83,46 @@ for y in range(0, new_image.size[1]):
 new_image.save(join(output_path, image_name + "_dithered.png"))
 
 
-# output = []
+output = []
+
+def color_to_binary(color1):
+    color_rgb = color1[:3]
+    return palette_binary[palette.index(color_rgb)]
 
 # read every pixel from BMP file
-# for i in range(0, image.size[1], 2):
-#     for j in range(0, image.size[0]):
-#         # get pixel value
-#         pixel1 = image.getpixel((j, i))
-#         pixel2 = image.getpixel((j, i+1))
-#         binary_1 = "{0:b}".format(pixel1).zfill(4)
-#         binary_2 = "{0:b}".format(pixel2).zfill(4)
+for i in range(0, new_image.size[1]):
+    for j in range(0, new_image.size[0], 2):
+        # get pixel value
+        pixel1 = new_image.getpixel((j, i))
+        pixel2 = new_image.getpixel((j+1, i))
+        
+        binary_1 = color_to_binary(pixel1)
+        binary_2 = color_to_binary(pixel2)
 
-#         combined = binary_1 + binary_2
+        combined = binary_1 + binary_2
 
-#         if (len(binary_1) != 4):
-#             print(binary_1)
+        if (len(binary_1) != 4):
+            print(binary_1)
             
-#         hex_version = hex(int(combined, 2))
-#         output.append(hex_version)
+        hex_version = hex(int(combined, 2))
+        output.append(chr(int(combined, 2)))
 
-# print(output)
-# print(len(output))
+print(output)
+print(len(output))
 
-# # save print(output) to a file
-# counter = 0
-# total_lines = 0
-# with open('output.txt', 'w') as f:
-#     f.write('const unsigned char image[] = {')
-#     for item in output:
-#         f.write("%s, " % item)
-#         counter += 1
-#         if counter == 16:
-#             f.write('\n')
-#             total_lines += 1
-#             counter = 0
+# save print(output) to a file
+counter = 0
+total_lines = 0
+with open('output.txt', 'w') as f:
+    # f.write('const unsigned char image[] = {')
+    for item in output:
+        f.write("%s" % item)
+        counter += 1
+        if counter == 16:
+            f.write('\n')
+            total_lines += 1
+            counter = 0
 
-#     f.write('};')
+    # f.write('};')
 
-# print("wrote " + str(total_lines) + " lines")
+print("wrote " + str(total_lines) + " lines")
