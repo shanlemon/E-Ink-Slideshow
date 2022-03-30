@@ -1,51 +1,43 @@
-service: backend
-
+service: backend2
 frameworkVersion: '3'
 
-custom:
-  tableName: 'users-table-${self:provider.stage}'
-  wsgi:
-    app: app.app
-  # bucketName: 'data-bucket-${self:provider.stage}'
-  
+# plugins:
+#   - serverless-python-requirements
 
+custom:
+  tableName: 'users-table'
+  bucketName: 'image-data'
 
 provider:
   name: aws
   runtime: python3.8
-  stage: dev
-  iam:
-    role:
-      statements:
-        - Effect: Allow
-          Action:
-            - dynamodb:Query
-            - dynamodb:Scan
-            - dynamodb:GetItem
-            - dynamodb:PutItem
-            - dynamodb:UpdateItem
-            - dynamodb:DeleteItem
-          Resource:
-            - Fn::GetAtt: [ UsersTable, Arn ]
-  environment:
-    USERS_TABLE: ${self:custom.tableName}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:*
+        - s3:*
+      Resource: '*'
 
 functions:
-  api:
-    handler: wsgi_handler.handler
+  hello:
+    handler: handler.hello
     events:
-      - httpApi: '*'
-
-plugins:
-  - serverless-wsgi
-  - serverless-python-requirements
+      - httpApi:
+          path: /
+          method: get
+  uploadImage:
+    handler: handlers/upload.uploadImage
+    events:
+      - httpApi:
+          path: /image
+          method: post
 
 resources:
   Resources:
-    # DataBucket:
-    #   Type: AWS::S3::Bucket
-    #   Properties:
-    #     BucketName: ${self:custom.bucketName}
+    DataBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:custom.bucketName}
     UsersTable:
       Type: AWS::DynamoDB::Table
       Properties:
@@ -59,3 +51,7 @@ resources:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
         TableName: ${self:custom.tableName}
+	
+ 
+ 
+
