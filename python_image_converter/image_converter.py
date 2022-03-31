@@ -4,6 +4,7 @@ from PIL import Image, ImageColor, ImageOps
 from os import listdir
 from os.path import isfile, join
 import math
+import base64
 
 from matplotlib.colors import hex2color, rgb2hex
 
@@ -100,29 +101,12 @@ for i in range(0, new_image.size[1]):
         binary_2 = color_to_binary(pixel2)
 
         combined = binary_1 + binary_2
-
-        if (len(binary_1) != 4):
-            print(binary_1)
             
-        hex_version = hex(int(combined, 2))
-        output.append(chr(int(combined, 2)))
+        hex_version = int(combined, 2)
+        byte_version = hex_version.to_bytes(1, 'big')
+        output.append(byte_version)
 
-print(output)
-print(len(output))
 
-# save print(output) to a file
-counter = 0
-total_lines = 0
 with open('output.txt', 'w') as f:
-    # f.write('const unsigned char image[] = {')
-    for item in output:
-        f.write("%s" % item)
-        counter += 1
-        if counter == 16:
-            f.write('\n')
-            total_lines += 1
-            counter = 0
+    f.write(base64.b64encode(b''.join(output)).decode("utf-8"))
 
-    # f.write('};')
-
-print("wrote " + str(total_lines) + " lines")
