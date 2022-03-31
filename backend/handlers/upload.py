@@ -22,8 +22,16 @@ def uploadImage(event, context):
         s3.put_object(
             Bucket="image-data",
             Key=f'{str(imageHash)}/dithered_image.png',
-            Body=dithered_image,
+            Body=image,
             ContentType='image/png'
+        )
+
+        # upload rawData to s3
+        s3.put_object(
+            Bucket="image-data",
+            Key=f'{str(imageHash)}/raw_data.txt',
+            Body=image,
+            ContentType='text/plain'
         )
 
         return {
