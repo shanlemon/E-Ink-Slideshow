@@ -13,7 +13,7 @@ images_bmp_path = "./images_bmp"
 output_path = "./output"
 image_output_dimensions = (600, 448)
 
-image_name = "rog"
+image_name = "outdoors"
 
 # black, white, red, green, blue, yellow, orange
 palette = [(0, 0, 0), (255, 255, 255), (255, 0, 0), (0, 255, 0), (0, 0, 255), (255, 255, 0), (255, 128, 0)]
@@ -35,7 +35,7 @@ def find_closest_palette_color(color):
             closest_color = palette_color
     return closest_color
 
-image = Image.open(join(images_path, image_name + ".png"))
+image = Image.open(join(images_path, image_name + ".jpg"))
 
 # duplicate image data
 new_image = ImageOps.fit(image, image_output_dimensions, method = 0,
